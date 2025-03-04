@@ -1,0 +1,100 @@
+<!-- app/views/admin/dashboard.html.erb -->
+<div class="flex h-screen bg-gray-100">
+    <!-- Sidebar -->
+    <%= render 'home/sidebar' %>
+  
+    <!-- Main Content -->
+    <div class="w-full h-screen bg-gray-100 flex items-center justify-center overflow-hidden">
+        <div class="w-full max-w-4xl p-8 bg-white rounded-lg shadow-lg">
+          
+          <h1 class="text-3xl font-semibold text-center text-gray-800 mb-6">Edit Profile</h1>
+          
+          <!-- Image Upload and Preview in the Same Row -->
+          <%= form_with(model: @user, url: charity_profile_update_path, method: :patch, local: true, html: { class: 'w-full' }) do |form| %>
+            <div class="flex items-center space-x-6 mb-6">
+              <!-- Image Preview -->
+              <div class="w-24 h-24 border rounded-full overflow-hidden">
+                <% if @user.image.attached? %>
+                  <%= image_tag @user.image, class: "w-full h-full object-cover" %>
+                <% else %>
+                  <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">No Image</div>
+                <% end %>
+              </div>
+              
+              <!-- Upload Input -->
+              <div class="flex items-center space-x-2">
+                <%= form.file_field :image, class: 'p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+                <%= form.submit 'Change Image', class: 'bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500' %>
+              </div>
+            </div>
+          <% end %>
+      
+          <!-- Profile Fields Update Form -->
+          <%= form_with(model: @user, url: charity_profile_update_path, method: :patch, local: true, html: { class: 'w-full' }) do |form| %>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flex flex-col">
+                <%= form.label :company_name, class: 'text-gray-700 font-medium' %>
+                <%= form.text_field :company_name, class: 'mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+              </div>
+      
+              <div class="flex flex-col">
+                <%= form.label :ein_number, class: 'text-gray-700 font-medium' %>
+                <%= form.number_field :ein_number, class: 'mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+              </div>
+      
+              <div class="flex flex-col">
+                <%= form.label :tax_number, class: 'text-gray-700 font-medium' %>
+                <%= form.number_field :tax_number, class: 'mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+              </div>
+      
+              <div class="flex flex-col">
+                <%= form.label :account_number, class: 'text-gray-700 font-medium' %>
+                <%= form.number_field :account_number, class: 'mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+              </div>
+      
+              <div class="flex flex-col">
+                <%= form.label :location, class: 'text-gray-700 font-medium' %>
+                <%= form.text_field :location, class: 'mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+              </div>
+      
+              <div class="flex flex-col">
+                <%= form.label :postal_address, class: 'text-gray-700 font-medium' %>
+                <%= form.text_field :postal_address, class: 'mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+              </div>
+
+              <div class="flex flex-col">
+                <%= form.label :country, class: 'text-gray-700 font-medium' %>
+                <%= form.text_field :country, class: 'mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+              </div>
+      
+              <div class="flex flex-col">
+                <%= form.label :state, class: 'text-gray-700 font-medium' %>
+                <%= form.text_field :state, class: 'mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+              </div>
+
+              <div class="flex flex-col">
+                <%= form.label :city, class: 'text-gray-700 font-medium' %>
+                <%= form.text_field :city, class: 'mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+              </div>
+      
+              <div class="flex flex-col">
+                <%= form.label :category, class: 'text-gray-700 font-medium' %>
+                <%= form.select :category, options_for_select([['Mosque', 'Mosque'], ['Community Center', 'Community Center'],['Other', 'Other']]), {}, class: 'mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+              </div>
+              
+            </div>
+      
+            <div class="flex mt-5 flex-col">
+              <%= form.label :description, class: 'text-gray-700 font-medium' %>
+              <%= form.text_area :description, class: 'mt-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+            </div>
+      
+            <div class="flex justify-center mt-8">
+              <%= form.submit 'Update Profile', class: 'w-full sm:w-auto bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+</div>
+  

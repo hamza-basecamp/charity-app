@@ -1,0 +1,70 @@
+<link rel="stylesheet" href="{{ 'custom-style.css' | asset_url }}">
+<div class="custom-text-container hidden" id="widget-container">
+  <div class="custom-text">
+    <h2 class="custom-heading">You Shop. We Give.</h2>
+    <p class="custom-paragraph">
+        Your purchase donates to support the cause of your choice.
+    </p>
+    <p class="custom-paragraph">
+        <a href="#" class="custom-link">Learn More</a>
+    </p>
+  </div>
+  <button class="custom-donation-button" onclick="showWidget()">Select</button>
+</div>
+
+
+<script>
+ document.addEventListener('DOMContentLoaded', () => {
+    window.acceptWidgetEnabled = false; // Default value
+
+    const productForm = document.querySelector('product-form');
+    if (!productForm) return; 
+    const product_id = productForm.form.elements['product-id'].value;
+    const donationButton = document.querySelector('.custom-donation-button');
+
+   let apiUrlDefaultWidget = "{{ settings.api_url | default: 'https://e253a87ef0fb.ngrok.app/webhook/accept_widget' }}";
+    const apiUrlWidget = `${apiUrlDefaultWidget}?product_id=${product_id}`;
+
+  fetch(apiUrlWidget, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.notice) {
+            window.acceptWidgetEnabled = data.notice; // Store the response globally
+
+            document.dispatchEvent(new CustomEvent('acceptWidgetUpdated', { detail: data.notice }));
+
+            const widget = document.getElementById("widget-container");
+            widget.classList.remove("hidden");
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching charities:', error);
+        donationButton.disabled = true; // Disable button on error
+    });
+ })
+
+  function showWidget() {
+    const modal = document.querySelector('.modal');
+    modal.classList.remove('hidden');
+}
+</script>
+
+
+{% schema %}
+{
+  "name": "Charity Button",
+  "target": "section",
+  "settings": [
+    { "type": "text", "id": "button_text", "label": "Button Text", "default": "Charity" },
+    { "type": "color", "id": "button_color", "label": "Button Color", "default": "#000000" }
+  ]
+}
+{% endschema %}
+
+

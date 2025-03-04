@@ -1,0 +1,160 @@
+<div class="flex h-screen bg-gray-100">
+    <!-- Sidebar -->
+    <%= render 'admin/sidebar' %>
+
+    <div class="flex-1 p-8 overflow-y-auto">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+        <div class="bg-white shadow-lg rounded-2xl p-6 text-center">
+          <h2 class="text-xl font-semibold text-gray-700">Total Orders</h2>
+          <p class="text-3xl font-bold text-blue-500 mt-2"><%= @order.count %></p>
+        </div>
+        
+        <div class="bg-white shadow-lg rounded-2xl p-6 text-center">
+          <h2 class="text-xl font-semibold text-gray-700">Total Revenue Order</h2>
+          <p class="text-3xl font-bold text-green-500 mt-2">$<%= @order.sum(&:total_line_items_price).round(2) %></p>
+        </div>
+        
+        <div class="bg-white shadow-lg rounded-2xl p-6 text-center">
+          <h2 class="text-xl font-semibold text-gray-700">Total Charities Donation</h2>
+          <p class="text-3xl font-bold text-red-500 mt-2">$<%= @order.sum(&:charity_price).round(2) %></p>
+        </div>
+      </div>
+      
+        <h2 class="text-xl font-bold text-gray-800 mb-3">Orders</h2>
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="min-w-full table-auto">
+                <thead class="bg-gray-200 text-gray-700">
+                  <tr>
+                    <th class="py-4 px-6 text-left">Campaign Name</th>
+                    <th class="py-4 px-6 text-left">Charity Name</th>
+                    <th class="py-4 px-6 text-left">Total LI Price</th>
+                    <th class="py-4 px-6 text-left">Charity Donation</th>
+                    <th class="py-4 px-6 text-left">Campaign Percentage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @order.each do |order| %>
+                    <tr id="order_<%= order.id %>" class="hover:bg-gray-50 transition duration-200">
+                      <td class="py-4 px-6 text-gray-600"><%= order.campaign_name %></td>
+                      <td class="py-4 px-6 text-gray-600"><%= order.user.company_name %></td>
+                      <td class="py-4 px-6 text-gray-600">$<%= order.total_line_items_price %></td>
+                      <td class="py-4 px-6 text-gray-600">$<%= order.charity_price %></td>
+                      <td class="py-4 px-6 text-gray-600"><%= order.charity_percentage %>%</td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h2 class="text-xl font-bold text-gray-800 mb-3 mt-10">Campaign</h2>
+          <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                  <thead class="bg-gray-200 text-gray-700">
+                    <tr>
+                      <th class="py-4 px-6 text-left">Campaign Name</th>
+                      <th class="py-4 px-6 text-left">Charities</th>
+                      <th class="py-4 px-6 text-left">Campaign Percentage</th>
+                      <th class="py-4 px-6 text-left">Active</th>
+                      <th class="py-4 px-6 text">Action</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @campaign.each do |campaign| %>
+                      <tr id="campaign<%= campaign.id %>" class="hover:bg-gray-50 transition duration-200">
+                        <td class="py-4 px-6 text-gray-600"><%= campaign.name %></td>
+                        <td class="py-4 px-6 text-gray-800 font-semibold">
+                          <% if campaign.users.any? %>
+                            <ul>
+                              <% campaign.users.each do |charity| %>
+                                <li class="text-gray-600"><%= charity.company_name %></li>
+                              <% end %>
+                            </ul>
+                          <% else %>
+                            <span class="text-gray-400">No Companies</span>
+                          <% end %>
+                        </td>
+                        <td class="py-4 px-6 text-gray-600"><%= campaign.campaign_percentage %>%</td>
+                        <td class="py-4 px-6 text-center">
+                          <% if campaign.active %>
+                            <%= button_to campign_deactive_admin_path(campaign), method: :patch, class: 'bg-blue-500 text-white text-lg font-semibold w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-300', data: { turbo: true } do %>
+                              ✓
+                            <% end %>
+                          <% else %>
+                            <%= button_to campaign_active_admin_path(campaign), method: :patch, class: 'bg-red-500 text-white text-lg font-semibold w-8 h-8 flex items-center justify-center rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300', data: { turbo: true } do %>
+                              ✓
+                            <% end %>
+                          <% end %>
+                        </td>
+                        <td class="py-4 px-6">
+                          <div class="relative flex items-center justify-center py-2">
+                            <button 
+                              onclick="openCampaignEditModal('<%= campaign.id %>', '<%= campaign.campaign_percentage %>', '<%= campaign.users%>')" 
+                              class="bg-transparent p-3 border-0 focus:outline-none hover:scale-105 transition duration-300 ease-in-out">
+                              <i class="fas fa-pencil-alt text-gray-500 hover:text-black text-xl"></i>
+                            </button>
+                            <%= button_to delete_campaign_admin_path(campaign), method: :delete, 
+                            class: 'bg-red-500 text-white text-lg font-semibold w-8 h-8 flex items-center justify-center rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300', 
+                            data: { turbo: true, confirm: 'Are you sure you want to delete this campaign?' } do %>
+                            <i class="fas fa-trash-alt"></i>
+                          <% end %>
+                      
+                          </div>
+                        </td>
+
+                        
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+    </div>
+</div>
+
+<div id="edit-modal-campaign" class="fixed inset-0 items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+  <div class="bg-white p-6 rounded-lg w-1/3 shadow-lg">
+    <h3 class="text-xl font-semibold mb-4 text-center">Edit Campaign</h3>
+    <%= turbo_frame_tag :edit_campaign do %>
+      <%= form_with url: "", method: :patch, local: false, id: 'edit-campaign-form' do |form| %>
+
+        <%= hidden_field_tag :id, '', id: 'campaign-id' %>
+        
+        <div class="mb-6">
+          <%= form.label :commission_rate, "Campaign Percentage", class: 'block text-gray-700 font-semibold' %>
+          <%= form.number_field :commission_rate, class: 'block w-full mt-2 p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500', placeholder: 'Enter commission rate',  id: 'commission-rate', step: '1', min: '1' %>          
+        </div>
+
+        <%= form.submit 'Update', class: 'w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200' %>
+      <% end %>
+    <% end %>
+    <button onclick="document.getElementById('edit-modal-campaign').classList.add('hidden')" 
+            class="mt-4 w-full text-center text-red-500 hover:text-red-700 font-semibold">
+      Close
+    </button>
+  </div>
+</div>
+
+
+<script>
+
+  function openCampaignEditModal(campaignId, commissionRate, campaignUsers) {
+    if (commissionRate === "") {
+    commissionRate = "0";
+  } 
+   const modal = document.getElementById("edit-modal-campaign");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  
+    document.getElementById("campaign-id").value = campaignId;
+    
+    document.getElementById("commission-rate").value = commissionRate;
+    const form = document.getElementById("edit-campaign-form");
+    form.action = `/admin_update_campaign/${campaignId}`;
+  }
+  
+  
+  </script>

@@ -1,0 +1,31 @@
+<!-- _charity_row.html.erb -->
+    <tr id="charity_<%= charity.id %>" class="hover:bg-gray-50 transition duration-200">
+      <td class="py-4 px-6 text-gray-600 text-center"><%= charity.id %></td>
+      <td class="py-4 px-6 text-gray-600"><%= charity.company_name %></td>
+    <td class="py-4 px-6 text-gray-600">
+      <%= charity.campaigns.any? ? charity.campaigns.pluck(:name).join(', ') : "NOT ASSIGNED" %>
+    </td>
+
+    <td class="py-4 px-6">
+      <div class="flex items-center">
+        <span class="px-3 py-1 rounded-full text-sm font-semibold <%= charity.approved ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %>">
+          <%= charity.approved ? "Approved" : "Not Approved" %>
+        </span>
+      </div>
+    </td>
+    
+    
+    <td class="py-4 px-6 text-center">
+        <% if charity.approved %>
+          <%= button_to disapprove_admin_path(charity), method: :patch, class: 'bg-green-500 text-white text-lg font-semibold w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-300', data: { turbo: true } do %>
+            ✓
+          <% end %>
+        <% else %>
+          <%= button_to approve_admin_path(charity), method: :patch, class: 'bg-red-500 text-white text-lg font-semibold w-8 h-8 flex items-center justify-center rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300', data: { turbo: true } do %>
+            ✓
+          <% end %>
+        <% end %>
+   
+  </tr>
+
+  

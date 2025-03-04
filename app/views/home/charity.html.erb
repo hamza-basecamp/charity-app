@@ -1,0 +1,50 @@
+<div class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+  <%= render 'home/sidebar' %>
+
+
+  <div class="flex-1 p-8 overflow-y-auto">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+      <div class="bg-white shadow-lg rounded-2xl p-6 text-center">
+        <h2 class="text-xl font-semibold text-gray-700">Total Orders</h2>
+        <p class="text-3xl font-bold text-blue-500 mt-2"><%= @order.count %></p>
+      </div>
+      
+      <div class="bg-white shadow-lg rounded-2xl p-6 text-center">
+        <h2 class="text-xl font-semibold text-gray-700">Total Revenue</h2>
+        <p class="text-3xl font-bold text-green-500 mt-2">$<%= @order.sum(&:total_line_items_price) %></p>
+      </div>
+      
+      <div class="bg-white shadow-lg rounded-2xl p-6 text-center">
+        <h2 class="text-xl font-semibold text-gray-700">Total Order Revenue</h2>
+        <p class="text-3xl font-bold text-red-500 mt-2">$<%= @order.sum(&:charity_price) %></p>
+      </div>
+    </div>
+
+       
+    <h2 class="text-xl font-bold text-gray-800 mb-3">Orders</h2>
+    <div class="bg-gray-100 shadow-lg rounded-xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full table-auto rounded-lg">
+          <thead class="bg-gray-300 text-gray-800">
+            <tr class="border-b border-gray-300">
+              <th class="py-4 px-6 text-center">Charity Donation</th>
+              <th class="py-4 px-6 text-center">Charity Percentage</th>
+              <th class="py-4 px-6 text-center">Order Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @order.each do |order| %>
+              <tr id="order_<%= order.id %>" class="hover:bg-gray-50 transition duration-200">
+                <td class="py-4 px-6 text-gray-700 text-center">$<%= order.charity_price %></td>
+                <td class="py-4 px-6 text-gray-700 text-center"><%= order.charity_percentage %>%</td>
+                <td class="py-4 px-6 text-gray-700 text-center"><%= order.financial_status %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+</div>
+</div>

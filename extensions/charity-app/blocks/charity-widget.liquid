@@ -1,0 +1,393 @@
+<link rel="stylesheet" href="{{ 'custom-style.css' | asset_url }}">
+<div is="charity-button" id="popup">
+  <section class="modal hidden" style="background-color: {{ settings.bg_color | default: '#ffffff' }}; margin: 0 20px; max-width: calc(100% - 40px);">
+    <div class="flex">
+      <h2 class="custom-heading">Select Charity</h2>
+      <button class="btn-close" aria-label="Close Modal">⨉</button>
+    </div>
+
+    <div class="search-container">
+      <input type="text" class="search-input" id="search-input" placeholder="Type anything to search..." />
+      <button id="search-btn" class="search-btn">
+        🔍
+      </button>
+    </div>
+
+    <div class="container-drop">
+      <div class="dropdown">
+        <select id="location-widget">
+          <option value="all" selected>All Locations</option>
+        </select>
+      </div>
+
+      <div class="dropdown">
+        <select id="category-widget">
+           <option value="all" selected>All Categories</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="scrollable-content" style="overflow: auto; scrollbar-width: none; -ms-overflow-style: none;">
+      <!-- Hide scrollbar for all browsers -->
+      <style>
+        .scrollable-content::-webkit-scrollbar {
+          display: none;
+        }
+      </style>
+
+      <!-- Featured Charity Section -->
+      <div style="text-align: center;">
+        {% if customer %}
+        <h2 style="color: #333;margin: 5px;/* padding: 1px; */font-size: 14px;font-weight: 600;text-align: left;">Featured Charity</h2>
+        {% endif %}
+        <div class="featured-items" id="featured-items" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+
+          <!-- JavaScript will render the featured items here -->
+
+          {% if customer %}
+            <script>
+              window.isLoggedIn = true;
+              window.customerEmail = "{{ customer.email }}";
+              window.storeUrl = "{{ shop.url }}";
+            </script>
+          {% else %}
+            <script>
+              window.isLoggedIn = false;
+              window.storeUrl = "{{ shop.url }}";
+            </script>
+          {% endif %}
+        </div>
+      </div>
+      {% if customer %}
+      <hr class="divider" />
+      {% endif %}
+      <!-- Searchable Charity Cards Section -->
+      <h2 style="color: #333;margin: 5px;/* padding: 1px; */font-size: 14px;font-weight: 600;text-align: left;">Charities</h2>
+      <div class="charity-grid" id="charity-grid" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
+        <!-- JavaScript will render the charity grid here -->
+
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+ document.addEventListener('DOMContentLoaded', () => {
+    if (window.acceptWidgetEnabled) {
+      executeWidgetLogic();
+    } else {
+      document.addEventListener('acceptWidgetUpdated', (event) => {
+        if (event.detail) {
+          executeWidgetLogic();
+        }
+      });
+    }
+  });
+
+  function executeWidgetLogic() {
+    const customerEmail = window.customerEmail;
+    const isLoggedIn = window.isLoggedIn;
+    const storeUrl = window.storeUrl;
+    const product_id = document.querySelector('product-form').form.elements['product-id'].value;
+
+    
+
+    let featuredCharities = [];
+    let allCharities = [];
+
+    let apiUrlDefault = "{{ settings.api_url | default: 'https://e253a87ef0fb.ngrok.app/webhook/charities' }}";
+    const apiUrlFeatured = "{{ settings.api_url_featured_charities | default: 'https://e253a87ef0fb.ngrok.app/webhook/featured_charities' }}";
+    let urlWithParams = `${apiUrlFeatured}?store_url=${encodeURIComponent(storeUrl)}`;
+    const apiUrl = `${apiUrlDefault}?product_id=${product_id}`;
+
+    if (isLoggedIn && customerEmail) {
+      urlWithParams += `&email=${encodeURIComponent(customerEmail)}`;
+      fetch(urlWithParams, {
+      method: 'GET',
+      headers: {
+        'X-Shopify-Hmac-Sha256': '<HMAC_SHA256>',  // You will need to generate this on your backend (Shopify webhook validation)
+        'X-Shopify-Shop-Domain': Shopify.shop,  // Shopify store domain (e.g., mystore.myshopify.com)
+        'Content-Type': 'application/json',
+      },
+      })
+      .then(response => response.json())
+      .then(data => {
+        renderFeaturedCharities(data);
+      })
+      .catch(error => {
+        console.error('Error fetching charities:', error);
+        document.getElementById('charity-grid').innerHTML =
+          '<p class="error-message">Unable to load charities. Please try again later.</p>';
+      });
+    }
+
+
+    fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+      })
+      .then(response => response.json())
+      .then(data => {
+      allCharities = data;
+      renderCharityGrid(data.charities,data.campaign);
+      renderFilterData(data);
+      })
+      .catch(error => {
+      console.error('Error fetching charities:', error);
+      document.getElementById('charity-grid').innerHTML =
+        '<p class="error-message">Unable to load charities. Please try again later.</p>';
+    });
+
+    const renderFeaturedCharities = (data) => {
+      const featuredContainer = document.getElementById('featured-items');
+      data.forEach(charity => {
+        const label = document.createElement("label");
+        label.className = "card-container";
+
+        // Create input (radio button)
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "charity";
+
+        // Create card div
+        const card = document.createElement("div");
+        card.className = "card-feature";
+        card.onclick = function () {
+          assignCharityId(charity.id);
+        };
+
+        // Create heading
+        const heading = document.createElement("h3");
+        heading.textContent = charity.company_name;
+
+        // Create paragraph
+        const paragraph = document.createElement("p");
+        paragraph.textContent = (charity.description ? charity.description.split(" ").slice(0, 10).join(" ") : "Provides social services, disaster relief, and supports mosques and madrasas.") + "...."
+
+        // Append heading and paragraph to card
+        card.appendChild(heading);
+        card.appendChild(paragraph);
+
+        // Append input and card to label
+        label.appendChild(input);
+        label.appendChild(card);
+
+
+        featuredContainer.appendChild(label);
+      });
+    };
+
+    const renderCharityGrid = (charities, campaign) => {
+      const gridContainer = document.getElementById('charity-grid');
+      gridContainer.innerHTML = '';
+
+      if (charities.length === 0) {
+        gridContainer.innerHTML = '<p class="text-center text-gray-500">No charities available.</p>';
+        return;
+      }
+
+      let count = 0;
+      let rowWrapper;
+      charities.forEach((charity, index) => {
+        const cardContainer = document.createElement("div");
+        cardContainer.classList.add("card");
+
+        const img = document.createElement("img");
+        img.src = "placeholder.jpg";
+        img.alt = "Icon";
+
+        const cardContent = document.createElement("div");
+        cardContent.classList.add("card-content");
+
+        const cardTitle = document.createElement("div");
+        cardTitle.classList.add("card-title");
+        cardTitle.textContent = charity.company_name;
+
+        const cardDescription = document.createElement("div");
+        cardDescription.classList.add("card-description");
+        cardDescription.textContent = (charity.description ? charity.description.split(" ").slice(0, 10).join(" ") : "Provides social services, disaster relief, and supports mosques and madrasas.") + "...." ;
+
+        const selectButton = document.createElement("button");
+        selectButton.classList.add("select-button-widget");
+        selectButton.textContent = "Select";
+
+        selectButton.onclick = function () {
+          assignCharityId(charity.id, campaign);
+        };
+
+        cardContent.appendChild(cardTitle);
+        cardContent.appendChild(cardDescription);
+        cardContainer.appendChild(img);
+        cardContainer.appendChild(cardContent);
+        cardContainer.appendChild(selectButton);
+        gridContainer.appendChild(cardContainer);
+
+        count++;
+      });
+    };
+
+    const renderFilterData = (data) => {
+      let categorySet = new Set();
+      for (let i = 0; i < data.charities.length; i++) {
+        const category = data.charities[i].category;
+        categorySet.add(category);
+      }
+
+      let uniqueCategories = [...categorySet];
+
+      let selectElementLocation = document.getElementById('category-widget');
+
+      uniqueCategories.forEach(category => {
+        let optionElement = document.createElement('option');
+        optionElement.value = category;
+        optionElement.textContent = category; 
+        selectElementLocation.appendChild(optionElement);
+      });
+
+
+      let locationSet = new Set();
+      for (let i = 0; i < data.charities.length; i++) {
+        const location = data.charities[i].state;
+        locationSet.add(location);
+      }
+
+      let uniqueLocations = [...locationSet];
+
+      let selectElement = document.getElementById('location-widget');
+
+      uniqueLocations.forEach(state => {
+        let optionElement = document.createElement('option');
+        optionElement.value = state;
+        optionElement.textContent = state; 
+        selectElement.appendChild(optionElement);
+      });
+
+    };
+
+
+    document.getElementById('search-btn').addEventListener('click', () => {
+      const searchInput = document.getElementById('search-input').value.trim().toLowerCase();
+      const filteredCharities = allCharities.charities.filter(charity =>
+        charity.company_name.toLowerCase().includes(searchInput)
+      );
+
+      if (searchInput === '') {
+        renderCharityGrid(allCharities.charities,allCharities.campaign);
+      } else if (filteredCharities.length > 0) {
+        renderCharityGrid(filteredCharities, allCharities.campaign);
+      } else {
+        const gridContainer = document.getElementById('charity-grid');
+        gridContainer.innerHTML = '<p class="text-center text-gray-500">No charity found with that name.</p>';
+      }
+    });
+
+    document.getElementById('category-widget').addEventListener('change', applyFilters);
+    document.getElementById('location-widget').addEventListener('change', applyFilters);
+
+
+    function filterByCategory(charities, selectedCategory) {
+      if (selectedCategory === 'all') {
+        return charities;
+      }
+      return charities.filter(charity =>
+        charity.category.toLowerCase() === selectedCategory.toLowerCase()
+      );
+    }
+
+    function filterByLocation(charities, selectedLocation) {
+      if (selectedLocation === 'all') {
+        return charities;
+      }
+      return charities.filter(charity =>
+        charity.state.toLowerCase() === selectedLocation.toLowerCase()
+      );
+    }
+
+    function applyFilters() {
+      const selectedCategory = document.getElementById('category-widget').value;
+      const selectedLocation = document.getElementById('location-widget').value;
+      let filteredCharities = allCharities.charities;
+      filteredCharities = filterByLocation(filteredCharities, selectedLocation);
+      filteredCharities = filterByCategory(filteredCharities, selectedCategory);
+      renderCharityGrid(filteredCharities, allCharities.campaign);
+    }
+  };
+
+  const modal = document.querySelector('.modal');
+  const closeModalBtn = document.querySelector('.btn-close');
+
+  const closeModal = function () {
+    modal.classList.add('hidden');
+  };
+
+  function assignCharityId(charity_id, campaign= "") {
+    const form = document.querySelector('product-form').form;
+    let charityInput = form.querySelector('#charity_line_item');
+    if (!charityInput) {
+      const charityInput = document.createElement('input');
+      charityInput.type = 'hidden';
+      charityInput.name = 'properties[Charity Id]';
+      charityInput.value = `${charity_id}.${campaign}`; 
+      charityInput.id = 'charity_line_item';
+      form.appendChild(charityInput);
+    } else {
+        charityInput.value = charity_id ; 
+    }
+    modal.classList.add('hidden');
+  }
+
+closeModalBtn.addEventListener('click', closeModal);
+</script>
+
+<style>
+  div[is='charity-button'] {
+    position: fixed;
+    top: 35%;
+    right: 60%;
+    z-index: 100;
+  }
+  .error-message {
+    color: red;
+    text-align: center;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Charity Widget",
+  "target": "head",
+  "settings": [
+    {
+      "type": "text",
+      "id": "api_url",
+      "label": "API URL",
+      "default": "https://e253a87ef0fb.ngrok.app/webhook/charities"
+    },
+    {
+      "type": "text",
+      "id": "api_url_featured_charities",
+      "label": "API URL FEATURED",
+      "default": "https://e253a87ef0fb.ngrok.app/webhook/featured_charities"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Modal Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Select"
+    }
+  ]
+}
+{% endschema %}
+
+

@@ -1,0 +1,118 @@
+<div class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+  <%= render 'admin/sidebar' %>
+
+  <!-- Main Content -->
+  <div class="flex-1 p-8 overflow-y-auto">
+    <h1 class="text-2xl font-semibold">Charities</h1>
+  
+    <!-- Search and Button Row -->
+    <div class="flex items-center justify-between w-full mb-4">
+      <!-- Left Side: Search Input -->
+      <div class="relative">
+        <input type="search" placeholder="Search" class="max-w-sm pl-10 border border-gray-300 rounded-md py-2 px-3" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+  
+      <!-- Right Side: Button -->
+      <div>
+        <%= button_tag type: "button", class: "flex items-center gap-2 bg-gray-600 text-white font-medium py-2 px-4 rounded-md hover:bg-gray-700 transition" do %>
+          <i class="fas fa-hand-holding-heart"></i>
+          Register Charity
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="bg-white shadow-lg rounded-lg mt-4 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full table-auto">
+          <thead class="bg-gray-200 text-gray-700">
+            <tr>
+              <th class="py-4 px-6 text-left">ID</th>
+              <th class="py-4 px-6 text-left">CHARITY NAME</th>
+              <th class="py-4 px-6 text-left">CHAMPAIGN</th>
+              <th class="py-4 px-6 text-left">STATUS</th>
+              <!-- <th class="py-4 px-6 text-left">EDIT</th> -->
+              <th class="py-4 px-6 text-left">ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @charities.each do |charity| %>
+              <tr id="charity_<%= charity.id %>" class="hover:bg-gray-50 transition duration-200">
+                <td class="py-4 px-6 text-gray-600 text-center"><%= charity.id %></td>
+                <td class="py-4 px-6 text-gray-600"><%= charity.company_name %></td>
+                <td class="py-4 px-6 text-gray-600">
+                  <%= charity.campaigns.any? ? charity.campaigns.pluck(:name).join(', ') : "NOT ASSIGNED" %>
+                </td>
+                
+                <td class="py-4 px-6">
+                  <div class="flex items-center">
+                    <span class="px-3 py-1 rounded-full text-sm font-semibold <%= charity.approved ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %>">
+                      <%= charity.approved ? "Approved" : "Not Approved" %>
+                    </span>
+                  </div>
+                </td>
+             
+                
+                
+                <td class="py-4 px-6 text-center">
+                    <% if charity.approved %>
+                      <%= button_to disapprove_admin_path(charity), method: :patch, class: 'bg-green-500 text-white text-lg font-semibold w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-300', data: { turbo: true } do %>
+                        ✓
+                      <% end %>
+                    <% else %>
+                      <%= button_to approve_admin_path(charity), method: :patch, class: 'bg-red-500 text-white text-lg font-semibold w-8 h-8 flex items-center justify-center rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300', data: { turbo: true } do %>
+                        ✓
+                      <% end %>
+                    <% end %>          
+                </td>
+                
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="edit-modal" class="fixed inset-0 items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+  <div class="bg-white p-6 rounded-lg w-1/3 shadow-lg">
+    <h3 class="text-xl font-semibold mb-4 text-center">Edit Charity</h3>
+    <%= turbo_frame_tag :edit_charity do %>
+      <%= form_with url: admin_update_charity_path(charity_id: ''), method: :patch, local: false, id: 'edit-charity-form' do |form| %>
+
+        <%= hidden_field_tag :id, '', id: 'charity-id' %>
+
+        <div class="mb-6">
+          <%= form.label :commission_type, "Commission Type", class: 'block text-gray-700 font-semibold' %>
+          <%= form.select :commission_type, [['Percentage', 'percentage'], ['Amount', 'amount']], {}, class: 'block w-full mt-2 p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+        </div>
+        
+        <div class="mb-6">
+          <%= form.label :commission_rate, "Value", class: 'block text-gray-700 font-semibold' %>
+          <%= form.number_field :commission_rate, class: 'block w-full mt-2 p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500', placeholder: 'Enter commission rate',  id: 'commission-rate', step: '1', min: '1' %>          
+        </div>
+
+        <%= form.submit 'Update', class: 'w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200' %>
+      <% end %>
+    <% end %>
+    <button onclick="document.getElementById('edit-modal').classList.add('hidden')" 
+            class="mt-4 w-full text-center text-red-500 hover:text-red-700 font-semibold">
+      Close
+    </button>
+  </div>
+</div>
+
+
+

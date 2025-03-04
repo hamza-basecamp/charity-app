@@ -1,0 +1,193 @@
+<div class="flex h-screen bg-gray-100">
+    <!-- Sidebar -->
+    <%= render 'admin/sidebar' %>
+    <div class="w-full h-screen bg-gray-100 flex items-center justify-center overflow-hidden">
+        <div class="w-full max-w-4xl p-8 bg-white rounded-lg shadow-lg">     
+            <h2 class="text-xl font-bold text-gray-800 mb-3">Create a Campaign</h2>
+
+
+            <%= form_with(url: admin_create_campaign_path, method: :patch, local: false, html: { class: 'w-full' }) do |form| %>
+              <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+                <!-- Campaign Dropdown -->
+                <div class="flex flex-col relative">
+                    <%= form.label :campaign_id, "Campaign Name", class: 'text-gray-700 font-medium mb-1' %>
+                    <%= form.hidden_field :campaign_title, id: "campaign_title" %>
+
+                    <%= form.select :campaign_id, 
+                    @collection_info.map { |collection| [collection[:title], collection[:id]] }, 
+                    { prompt: "Choose a campaign" },
+                    id: "campaign_id", # Ensure the select element has the correct id
+                    class: 'p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full' 
+                  %>
+                </div>
+                <div class="flex flex-col relative">
+                  <%= form.label :campaign_percentage, "Value", class: 'block text-gray-700 font-semibold' %>
+                  <%= form.number_field :campaign_percentage, class: 'block w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500', placeholder: 'Enter commission rate',  id: 'campaign_percentage-rate', step: '1', min: '1' %>          
+                </div>
+                
+            
+                <!-- Users Multi-Select Dropdown -->
+                <div class="flex flex-col relative">
+                    <%= form.label :user_ids, "Select Charities", class: 'text-gray-700 font-medium mb-1' %>
+                    <%= form.hidden_field :user_ids, id: "selected_users_input", multiple: true %>
+            
+                    <input type="text" id="user_search" placeholder="Search Charities..."
+                            class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 relative z-20">
+                    
+                    <!-- Dropdown -->
+                    <ul id="user_dropdown" class="absolute top-full left-0 w-full bg-white border rounded-lg hidden max-h-40 overflow-auto shadow-lg z-10">
+                    <li class="cursor-pointer p-2 hover:bg-gray-200 select-all" data-id="all">
+                        Select All
+                    </li>
+                    <%  @charities.each do |company_name, id| %>
+                        <li class="cursor-pointer p-2 hover:bg-gray-200" data-id="<%= id %>">
+                        <%= company_name %>
+                        </li>
+                    <% end %>
+                    </ul>
+            
+                    <!-- Selected Users (Tags) -->
+                    <div id="selected_users" class="mt-2 flex flex-wrap gap-2"></div>
+                </div>
+
+                
+                <!-- Submit Button -->
+              </div>
+              <div class="flex justify-center mt-8">
+                <%= form.submit "Create Campaign", class: 'w-full sm:w-auto bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500' %>
+              </div>
+            <% end %>
+   
+        </div>
+    </div>
+</div>
+<script>
+
+window.onload = function() {
+    // Ensure the function is called after the page is loaded
+
+    // Attach the onchange event listener to the select element
+    document.getElementById('campaign_id').addEventListener('change', updateCampaignTitle);
+  };
+
+  function updateCampaignTitle() {
+    // Get the selected option text (title)
+    var selectedOption = document.getElementById('campaign_id').selectedOptions[0];
+        
+    // Ensure that the hidden field is updated with the title of the selected option
+    if (selectedOption) {
+      document.getElementById('campaign_title').value = selectedOption.text;
+    }
+  }
+
+document.addEventListener("DOMContentLoaded", function () {
+  const searchInput = document.getElementById("user_search");
+  const dropdown = document.getElementById("user_dropdown");
+  const selectedUsersDiv = document.getElementById("selected_users");
+  const selectedUsersInput = document.getElementById("selected_users_input");
+
+  let selectedUsers = [];
+
+  // Function to show dropdown
+  function showDropdown() {
+    dropdown.classList.remove("hidden");
+  }
+
+  // Function to filter dropdown items
+  function filterDropdown() {
+    const filter = searchInput.value.trim().toLowerCase();
+    let hasResults = false;
+
+    Array.from(dropdown.children).forEach(item => {
+      if (item.innerText.toLowerCase().includes(filter)) {
+        item.style.display = "block";
+        hasResults = true;
+      } else {
+        item.style.display = "none";
+      }
+    });
+
+    // Show or hide dropdown based on available results
+    dropdown.classList.toggle("hidden", !hasResults);
+  }
+  // Hide dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!dropdown.contains(e.target) && e.target !== searchInput) {
+      dropdown.classList.add("hidden");
+    }
+  });
+
+  // Show dropdown when clicking input
+  searchInput.addEventListener("click", showDropdown);
+
+  // Show and filter dropdown on input
+  searchInput.addEventListener("input", function () {
+    showDropdown();
+    filterDropdown();
+  });
+
+  // Select user from dropdown
+  dropdown.addEventListener("click", (e) => {
+      if (e.target.tagName === "LI") {
+        const userId = e.target.dataset.id;
+        const userName = e.target.innerText;
+
+        // Handle "Select All" functionality
+        if (userId === "all") {
+          // Select all items if "Select All" is clicked
+          Array.from(dropdown.children).forEach(item => {
+            if (item.dataset.id !== "all" && !selectedUsers.some(u => u.id === item.dataset.id)) {
+              selectedUsers.push({ id: item.dataset.id, name: item.innerText });
+              const badge = createBadge(item.innerText, item.dataset.id);
+              selectedUsersDiv.appendChild(badge);
+            }
+          });
+
+          // Update hidden input with all selected users
+          selectedUsersInput.value = selectedUsers.map(u => u.id).join(",");
+        } else {
+          if (!selectedUsers.some(u => u.id === userId)) {
+            selectedUsers.push({ id: userId, name: userName });
+
+            // Create badge element
+            const badge = createBadge(userName, userId);
+            selectedUsersDiv.appendChild(badge);
+
+            // Update hidden input
+            selectedUsersInput.value = selectedUsers.map(u => u.id).join(",");
+          }
+        }
+
+        searchInput.value = "";
+        dropdown.classList.add("hidden");
+      }
+    });
+
+    // Function to create badge element
+    function createBadge(userName, userId) {
+      const badge = document.createElement("span");
+      badge.classList.add("bg-blue-500", "text-white", "px-3", "py-1", "rounded-full", "text-sm", "flex", "items-center", "gap-2");
+      badge.innerHTML = `${userName} <button class="remove-user text-white font-bold" data-id="${userId}">×</button>`;
+      return badge;
+    }
+
+  
+
+  // Remove user badge
+  selectedUsersDiv.addEventListener("click", (e) => {
+    if (e.target.classList.contains("remove-user")) {
+      const userId = e.target.dataset.id;
+      selectedUsers = selectedUsers.filter(u => u.id !== userId);
+      e.target.parentElement.remove();
+      selectedUsersInput.value = selectedUsers.map(u => u.id).join(",");
+    }
+  });
+
+
+  // Prevent dropdown from closing when clicking inside
+  dropdown.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+  });
+});
+
+</script>

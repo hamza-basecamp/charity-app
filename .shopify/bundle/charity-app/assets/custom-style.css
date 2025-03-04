@@ -1,0 +1,314 @@
+/* Container Styling */
+.custom-text-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #000000; /* Grey border */
+  padding: 0.9rem; /* Add spacing inside the container */
+  border-radius: 4px; /* Rounded corners */
+  background-color: #ffffff; /* Optional: White background */
+  text-align: left; /* Center-align text and button */
+  width: 100%; /* Full width of the parent container */
+  max-width: 500px; /* Restrict maximum width */
+  margin: 1rem auto; /* Center the block horizontally */
+}
+.custom-text {
+  flex: 1;
+}
+/* Heading Styling */
+.custom-heading {
+  font-size: 1.2rem; /* Adjust heading size */
+  font-weight: bold;
+  color: #333; /* Dark grey text */
+  margin-bottom: 0.5rem;
+}
+
+/* Paragraph Styling */
+.custom-paragraph {
+  font-size: 1rem; /* Adjust paragraph size */
+  color: #666; /* Lighter grey text */
+  margin-bottom: 0.5rem;
+}
+
+.custom-link {
+  font-weight: bold;
+  text-decoration: underline;
+  color: black;
+  font-size: 1rem;
+}
+
+/* Button Styling */
+.custom-donation-button {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ffffff; /* White text */
+  background-color: #000000; /* Black background */
+  border: none;
+  border-radius: 4px; /* Slightly rounded corners */
+  cursor: pointer;
+  transition: all 0.3s ease; /* Smooth hover effect */
+}
+
+.custom-donation-button:hover {
+  background-color: #333; /* Darker grey on hover */
+  color: #fff;
+}
+
+/* Modal Styling */
+.modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+  width: calc(40%); /* 90% of the viewport width */
+  padding: 2rem;
+  min-height: 700px;
+  position: fixed;
+  z-index: 10;
+  top: 50%;
+  left: 50%;
+  transform: translate(20%, -50%);
+  background-color: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Divider */
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: #ddd;
+  margin: 1.5rem 0;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  color: #333;
+  margin: 0;
+}
+
+.modal .flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 10px;
+}
+
+.modal h1 {
+  font-size: 2rem;
+  margin: 0.5rem 0 0.2rem;
+}
+
+/* Button */
+button {
+  cursor: pointer;
+  border: none;
+  font-weight: 600;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.8rem 1.4rem;
+  font-weight: 700;
+  background-color: black;
+  color: white;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1em;
+  margin: 10px;
+}
+
+.btn-open {
+  position: absolute;
+  bottom: 150px;
+}
+
+.btn-close {
+  position: absolute;
+  right: 10px; /* Distance from the right edge of the modal */
+  padding: 0.5rem;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 1;
+}
+
+.hidden {
+  display: none;
+}
+
+.text-description {
+  font-size: 30;
+}
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scrollable-content {
+  max-height: 470px;
+  overflow-y: auto;
+  padding-right: 10px;
+  width: 90%;
+}
+
+
+.featured-items {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+
+}
+
+/* Charity Grid Styling */
+.charity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f8fafc;
+  padding: 1px;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 12px;
+  padding: 5px;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.search-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+
+.container-drop {
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+  max-width: 800px; /* Set the max width of the container */
+  margin: 0 auto;
+}
+
+.dropdown {
+  width: 48%; /* Adjust width as needed */
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+
+.card {
+  display: flex;
+  align-items: center;
+  width: 500px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-direction: row !important;
+}
+.card img {
+  width: 50px;
+  height: 50px;
+  background: #e0e0e0;
+  border-radius: 5px;
+  margin-right: 15px;
+}
+.card-content {
+  flex-grow: 1;
+}
+.card-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+.card-description {
+  color: #666;
+  font-size: 10px;
+
+}
+.select-button-widget {
+  padding: 2px 6px;
+  border: 1px solid #000;
+  background: transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.card-container {
+  display: inline-block;
+  cursor: pointer;
+  width: 30%; /* Ensures three cards per row */
+
+}
+
+.card-feature {
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 5px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.card-feature h3 {
+  margin: 1px;
+  font-size: 11px;
+
+}
+
+.card-feature p {
+  color: #555;
+  font-size: 9px;
+}
+
+/* Hide the radio button */
+.card-container input {
+  display: none;
+}
+
+/* Change style when checked */
+.card-container input:checked + .card-feature {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}

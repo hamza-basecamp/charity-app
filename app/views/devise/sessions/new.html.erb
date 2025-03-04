@@ -1,0 +1,35 @@
+<div class="min-h-screen flex bg-white">
+  <!-- Left side with the form -->
+  <div class="w-1/2 flex items-center justify-center bg-white">
+    <div class="p-8 w-full max-w-md">
+
+      <div class="flex justify-center mb-4">
+        <%= image_tag "logo.png", alt: "Logo", class: "h-16" %>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 text-center">Log In</h2>
+      
+      <!-- Signup link at the top of the login page -->
+      
+      
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4" }) do |f| %>
+        <div>
+          <%= f.label :email, class: "block text-sm font-medium text-black" %>
+          <%= f.email_field :email, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm" %>
+        </div>
+        <div>
+          <%= f.label :password, class: "block text-sm font-medium text-black" %>
+          <%= f.password_field :password, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm" %>
+        </div>
+        <div class="text-center mb-4">
+          <%= link_to "Don't have an account? Sign Up", new_user_registration_path, class: "text-black hover:underline" %>
+        </div>
+        <div>
+          <%= f.submit "Log In", class: "w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  
+  <!-- Right side with grey background -->
+  <div class="w-1/2 flex items-center justify-center bg-gray-500 rounded-lg m-4"></div>
+</div>

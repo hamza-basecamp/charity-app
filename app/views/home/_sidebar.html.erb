@@ -1,0 +1,33 @@
+  <!-- _sidebar.html.erb -->
+<div class="w-64 bg-gray-50 min-h-screen p-4">
+  <h2 class="text-gray-500 text-xl mb-4">Main Menu</h2>
+  <nav class="space-y-1">
+    <%= link_to charity_dashboard_path, class: "w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left #{'bg-blue-50 text-blue-600' if current_page?(charity_dashboard_path)} text-gray-600 hover:bg-gray-100" do %>
+      <i class="fas fa-home w-5 h-5 #{'text-blue-600' if current_page?(admin_charities_path)}"></i>
+      <span class="font-medium">Dashboard</span>
+    <% end %>
+
+    <%= link_to charity_profile_path, class: "w-full flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 #{'bg-gray-100' if current_page?(charity_profile_path)}" do %>
+      <div class="flex items-center gap-3">
+        <i class="fas fa-users w-5 h-5 text-gray-500"></i>
+        <span class="font-medium">Profile</span>
+      </div>
+    <% end %>
+
+    <%= link_to charity_profile_path, class: "w-full flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 #{'bg-gray-100' if current_page?(admin_orders_path)}" do %>
+      <i class="fas fa-folder w-5 h-5 text-gray-500"></i>
+      <span class="font-medium">Chat</span>
+    <% end %>
+
+    <%= form_for :destroy_user_session, url: destroy_user_session_path, method: :delete, class: "w-full" do %>
+      <%= button_tag type: 'submit', class: 'w-full flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100' do %>
+        <i class="fas fa-sign-out-alt w-5 h-5 text-gray-500"></i>
+        <span class="font-medium">Logout</span>
+      <% end %>
+    <% end %>
+
+  
+  </nav>
+</div>
+
+  

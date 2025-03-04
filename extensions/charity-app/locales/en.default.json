@@ -1,0 +1,13 @@
+{
+  "charity-button": {
+    "button_text": "Buy Now",
+    "button_hover_text": "Click to Proceed",
+    "button_click_alert": "Button clicked!"
+  },
+  "charity-widget": {
+    "button_text": "Open Widget",
+    "widget_title": "Welcome to the Full-Page Widget!",
+    "widget_description": "This widget covers the entire page. Add your custom content here.",
+    "close_button_text": "Close Widget"
+  }
+}
