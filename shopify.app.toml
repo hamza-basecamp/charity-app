@@ -1,28 +1,28 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "987f2b0816f08d00f9c048632fa505ae"
-application_url = "https://d38b8c785eaa.ngrok.app/auth/shopify/login"
+client_id = "ef9f352ccf21b6f051d0da27bc6378c8"
+application_url = "https://ummah-bazar-926d98569447.herokuapp.com/auth/shopify/login"
 embedded = true
-name = "Charity APP"
+name = "Ummah Bazar"
 handle = "charity-app-6"
 
 [webhooks]
 api_version = "2024-10"
 
   [[webhooks.subscriptions]]
-  uri = "https://d38b8c785eaa.ngrok.app/gdpr/customer_data_request"
+  uri = "https://ummah-bazar-926d98569447.herokuapp.com/gdpr/customer_data_request"
   compliance_topics = [ "customers/data_request" ]
 
   [[webhooks.subscriptions]]
-  uri = "https://d38b8c785eaa.ngrok.app/gdpr/customer_redact"
+  uri = "https://ummah-bazar-926d98569447.herokuapp.com/gdpr/customer_redact"
   compliance_topics = [ "customers/redact" ]
 
   [[webhooks.subscriptions]]
-  uri = "https://d38b8c785eaa.ngrok.app/gdpr/shop_redact"
+  uri = "https://ummah-bazar-926d98569447.herokuapp.com/gdpr/shop_redact"
   compliance_topics = [ "shop/redact" ]
 
 [auth]
-redirect_urls = [ "https://d38b8c785eaa.ngrok.app/auth/shopify/callback" ]
+redirect_urls = [ "https://ummah-bazar-926d98569447.herokuapp.com/auth/shopify/callback" ]
 
 [pos]
 embedded = false

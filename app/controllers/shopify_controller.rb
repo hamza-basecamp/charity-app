@@ -59,9 +59,6 @@ class ShopifyController < ActionController::Base
     oauth_state = params[:state]
     if Rails.cache.read(oauth_state)
       render status: :too_many_requests, json: { error: "Too many requests. Please try again later." }
-    else
-      # Store state in cache with an expiry to prevent multiple submissions
-      Rails.cache.write(oauth_state, true, expires_in: 1.minute)
     end
   end
 end
