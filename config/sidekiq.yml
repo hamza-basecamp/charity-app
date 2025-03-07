@@ -1,6 +1,6 @@
-# config/sidekiq.yml
----
-:concurrency: 5
+development:
+  :concurrency: 1
+production:
+  :concurrency: 5
 :queues:
   - default
-  - mailers
