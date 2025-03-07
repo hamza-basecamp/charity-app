@@ -97,8 +97,8 @@
     let featuredCharities = [];
     let allCharities = [];
 
-    let apiUrlDefault = "{{ settings.api_url | default: 'https://ummah-bazar-926d98569447.herokuapp.com/webhook/charities' }}";
-    const apiUrlFeatured = "{{ settings.api_url_featured_charities | default: 'https://ummah-bazar-926d98569447.herokuapp.com/webhook/featured_charities' }}";
+    let apiUrlDefault = "{{ settings.api_url | default: 'https://charity.ummahbazaar.com/webhook/charities' }}";
+    const apiUrlFeatured = "{{ settings.api_url_featured_charities | default: 'https://charity.ummahbazaar.com/webhook/featured_charities' }}";
     let urlWithParams = `${apiUrlFeatured}?store_url=${encodeURIComponent(storeUrl)}`;
     const apiUrl = `${apiUrlDefault}?product_id=${product_id}`;
 
@@ -366,13 +366,13 @@ closeModalBtn.addEventListener('click', closeModal);
       "type": "text",
       "id": "api_url",
       "label": "API URL",
-      "default": "https://ummah-bazar-926d98569447.herokuapp.com/webhook/charities"
+      "default": "https://charity.ummahbazaar.com/webhook/charities"
     },
     {
       "type": "text",
       "id": "api_url_featured_charities",
       "label": "API URL FEATURED",
-      "default": "https://ummah-bazar-926d98569447.herokuapp.com/webhook/featured_charities"
+      "default": "https://charity.ummahbazaar.com/webhook/featured_charities"
     },
     {
       "type": "color",

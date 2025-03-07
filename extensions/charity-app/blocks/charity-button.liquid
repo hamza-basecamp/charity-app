@@ -22,7 +22,7 @@
     const product_id = productForm.form.elements['product-id'].value;
     const donationButton = document.querySelector('.custom-donation-button');
 
-   let apiUrlDefaultWidget = "{{ settings.api_url | default: 'https://ummah-bazar-926d98569447.herokuapp.com/webhook/accept_widget' }}";
+   let apiUrlDefaultWidget = "{{ settings.api_url | default: 'https://charity.ummahbazaar.com/webhook/accept_widget' }}";
     const apiUrlWidget = `${apiUrlDefaultWidget}?product_id=${product_id}`;
 
   fetch(apiUrlWidget, {
