@@ -122,13 +122,13 @@ class WebhookController < ApplicationController
 
 
   def set_shopify_client
-    Shop.find(1).with_shopify_session do
+    Shop.find(34).with_shopify_session do
       @client = ShopifyAPI::GraphQL.client
     end
   end
 
   def fetch_product_collections(product_id)
-    Shop.find(1).with_shopify_session do
+    Shop.find(34).with_shopify_session do
       begin
         response = ShopifyService.new.get_collection_name(@client, product_id)
         if response.data&.product
