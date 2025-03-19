@@ -51,7 +51,7 @@ class AdminController < ApplicationController
   def campaign
     @collection_info = [] 
     @charities = User.approved.pluck(:company_name, :id)
-    Shop.find(1).with_shopify_session do
+    Shop.find(34).with_shopify_session do
       client = ShopifyAPI::GraphQL.client
       res = ShopifyService.new.get_collections(client)
       if res.data.collections
